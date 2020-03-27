@@ -60,7 +60,7 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self, input_size, hidden_size, word_vectors, n_layers, trg_vocab, device, dropout,
+    def __init__(self, input_size, hidden_size, word_vectors, n_layers, trg_vocab dropout,
                  attention=None, min_len_sentence=config.min_len_sentence,
                  max_len_sentence=config.max_len_question, top_k=config.top_k, top_p=config.top_p,
                  temperature=config.temperature, decode_type=config.decode_type):
@@ -78,7 +78,6 @@ class Decoder(nn.Module):
         self.temperature = temperature
         self.decode_type = decode_type
         self.special_tokens_ids = [trg_vocab.stoi[t] for t in ["<EOS>", "<PAD>"]]
-        self.device = device
 
     def decode_rnn(self, dec_input, dec_hidden, enc_out):
         if isinstance(self.rnn, nn.GRU):
@@ -97,8 +96,8 @@ class Decoder(nn.Module):
         batch_size = enc_out.size(0)
         outputs = []
 
-        dec_input = torch.zeros(enc_out.size(0), 1).fill_(2).long().to(self.device)
-        input_feed = torch.zeros(batch_size, 1, enc_out.size(2), device=self.device)
+        dec_input = torch.zeros(enc_out.size(0), 1).fill_(2).long()
+        input_feed = torch.zeros(batch_size, 1, enc_out.size(2))
 
         for t in range(0, self.max_len_sentence):
             dec_input = self.embedding(dec_input)  # (batch size, 1, emb dim)
@@ -123,8 +122,8 @@ class Decoder(nn.Module):
 
     def beam_decode(self, dec_hidden, enc_out, beam_width=3, topk=3):
         # Start decoding step with <SOS> token and empty input feed, stored in a Beam node
-        dec_input = torch.zeros(1, 1).fill_(2).long().to(self.device)
-        input_feed = torch.zeros(1, 1, enc_out.size(2), device=self.device)
+        dec_input = torch.zeros(1, 1).fill_(2).long()
+        input_feed = torch.zeros(1, 1, enc_out.size(2))
         node = BeamSearchNode(dec_hidden, None, dec_input, 0, 1, input_feed)
 
         # Initialize Beam queue objects and an output list
@@ -208,8 +207,8 @@ class Decoder(nn.Module):
         batch_size = enc_out.size(0)
         outputs = []
 
-        dec_input = torch.zeros(enc_out.size(0), 1).fill_(2).long().to(self.device)
-        input_feed = torch.zeros(batch_size, 1, enc_out.size(2), device=self.device)
+        dec_input = torch.zeros(enc_out.size(0), 1).fill_(2).long()
+        input_feed = torch.zeros(batch_size, 1, enc_out.size(2))
 
         for t in range(0, self.max_len_sentence):
             dec_input = self.embedding(dec_input)  # (batch size, 1, emb dim)
@@ -249,7 +248,7 @@ class Decoder(nn.Module):
 
         if question is not None:  # TRAINING with teacher
             q_emb = self.embedding(question)
-            input_feed = torch.zeros(batch_size, 1, enc_out.size(2), device=self.device)
+            input_feed = torch.zeros(batch_size, 1, enc_out.size(2))
             for dec_input in q_emb[:, :-1, :].split(1, 1):
                 dec_input = torch.cat((dec_input, input_feed), 2)
 

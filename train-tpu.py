@@ -6,13 +6,11 @@ import torch.nn as nn
 from torch.nn.utils import clip_grad_norm_
 from torchtext import data
 from tensorboardX import SummaryWriter
-import wandb
-from pytorch_lightning.loggers import WandbLogger
-wandb.init(name='', project='QGeneration', sync_tensorboard=True)
 import pytorch_lightning as pl
 # internal utilities
 import config
 from model import Seq2Seq, mc, vocabs
+from utils import dress_for_loss, save_checkpoint, correct_tokens
 
 prepro_params = {
     "word_embedding_size": config.word_embedding_size,
@@ -36,15 +34,20 @@ hyper_params = {
     "pretrained": config.pretrained
 }
 
+experiment_params = {"preprocessing": prepro_params, "model": hyper_params}
 
-device = torch.device("cuda" if hyper_params["cuda"] else "cpu")
+experiment_path = "output/{}".format(config.exp)
+if not os.path.exists(experiment_path):
+    os.mkdir(experiment_path)
+
+
+#device = torch.device("cuda" if hyper_params["cuda"] else "cpu")
 
 # Load the model
 model = Seq2Seq(in_vocab=vocabs["src_vocab"],
                 hidden_size=hyper_params["hidden_size"],
                 n_layers=hyper_params["n_layers"],
                 trg_vocab=vocabs['trg_vocab'],
-                device=device,
                 drop_prob=hyper_params["drop_prob"],
                 use_answer=hyper_params["use_answer"])
 
@@ -64,9 +67,7 @@ else:
 
 # Train the model
 print("Starting training...")
-wandb_logger = WandbLogger(name='TPU-Iteration1', project='QGeneration')
-wandb_logger.watch(model, log_freq=100)
-trainer = pl.Trainer(num_tpu_cores=8, max_epochs=hyper_params["num_epochs"], logger=wandb_logger)
+trainer = pl.Trainer(num_tpu_cores=8, max_epochs=hyper_params["num_epochs"])
 trainer.fit(model)
 
 # Save last model weights

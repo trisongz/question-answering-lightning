@@ -41,7 +41,7 @@ torch.manual_seed(42)
 
 
 # Define a path to save experiment logs
-experiment_path = "/home/jupyter/output/{}".format(config.exp)
+experiment_path = "/content/logs/{}".format(config.exp)
 if not os.path.exists(experiment_path):
     os.mkdir(experiment_path)
 
@@ -64,7 +64,7 @@ padding_idx = vocabs['trg_vocab'].stoi["<PAD>"]
 criterion = nn.NLLLoss(ignore_index=padding_idx, reduction="sum")
 
 class Seq2Seq(pl.LightningModule):
-    def __init__(self, in_vocab, hidden_size, n_layers, trg_vocab, device, drop_prob=0., use_answer=True):
+    def __init__(self, in_vocab, hidden_size, n_layers, trg_vocab, drop_prob=0., use_answer=True):
         super(Seq2Seq, self).__init__()
 
         self.enc = layers.Encoder(input_size=in_vocab.vectors.size(1) if not use_answer else in_vocab.vectors.size(1) +
@@ -80,7 +80,6 @@ class Seq2Seq(pl.LightningModule):
                                   word_vectors=in_vocab.vectors,
                                   trg_vocab=trg_vocab,
                                   n_layers=n_layers,
-                                  device=device,
                                   dropout=drop_prob if n_layers > 1 else 0.,
                                   attention=True)
 
@@ -96,7 +95,6 @@ class Seq2Seq(pl.LightningModule):
                                     batch_size=hyper_params["batch_size"],
                                     sort_key=lambda x: len(x.src),
                                     sort_within_batch=True,
-                                    device=device,
                                     shuffle=False)
         
         print("Length of training data loader is:", len(train_dataloader))
@@ -107,7 +105,6 @@ class Seq2Seq(pl.LightningModule):
                                     batch_size=hyper_params["batch_size"],
                                     sort_key=lambda x: len(x.src),
                                     sort_within_batch=True,
-                                    device=device,
                                     shuffle=True)
         
         print("Length of valid data loader is:", len(valid_dataloader))

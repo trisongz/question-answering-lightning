@@ -12,7 +12,7 @@ dev_dir = squad_data_dir + "dev/"
 spacy_en = "/usr/local/lib/python3.6/dist-packages/en_core_web_sm/en_core_web_sm-2.1.0"
 #glove = "/content/saved_models/glove.6B/"
 glove = "/content/saved_models/glove/"
-squad_models = "/content/saved_models/squad/models/"
+squad_models = "/content/saved_models/squad/"
 
 # preprocessing values
 paragraph = True
