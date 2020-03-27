@@ -1,5 +1,9 @@
 # Neural Question Generation: Learning to Ask
 
+### Adapted from
+
+[GauthierDmn's Implementation](https://github.com/GauthierDmn/question_generation) for usage with PyTorch Lightning/TPU
+
 This projects aims at exploring automatic question generation from sentences in reading comprehension passages using deep neural networks.
 
 We can interpret this task as the reverse objective of Question Answering, where given a sentence and a question, we build an algorithm to find the answer. Here the goal is to generate a question given a sentence in input, and potentially an answer.
