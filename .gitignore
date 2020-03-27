@@ -1,0 +1,9 @@
+
+.ipynb_checkpoints/config-checkpoint.py
+.ipynb_checkpoints/make_dataset-checkpoint.py
+.ipynb_checkpoints/model-checkpoint.py
+.ipynb_checkpoints/preprocessing-checkpoint.py
+.ipynb_checkpoints/train-checkpoint.py
+.ipynb_checkpoints/train-tpu-checkpoint.py
+.vector_cache/glove.840B.300d.txt.pt_.gstmp
+.vector_cache/glove.840B.300d.txt.pt
